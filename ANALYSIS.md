@@ -17,6 +17,12 @@ Failover behaviour ([model-failover docs](https://github.com/openclaw/openclaw/b
 - After exhausting all profiles for a provider, advances to next model in `fallbacks`
 - Multiple API keys for the same provider multiply your effective rate limit
 
+**Known bugs** (as of Feb 2026):
+- `heartbeat.model` override is reportedly ignored at runtime -- heartbeats use the primary model instead ([Issue #9556](https://github.com/openclaw/openclaw/issues/9556))
+- `subagents.model` override is reportedly ignored -- subagents use the primary model instead ([Issue #10963](https://github.com/openclaw/openclaw/issues/10963))
+
+Until these bugs are fixed, the heartbeat and subagent model assignments below are aspirational. In practice, all roles may use the primary model. This makes the primary choice even more important, and strengthens the case for the multi-provider fallback chain.
+
 ---
 
 ## Model Landscape (Feb 2026)
@@ -540,6 +546,96 @@ MISTRAL_API_KEY=...
 
 ---
 
+## Alternative: Haiku Primary / Opus Subagents / Ollama Heartbeat
+
+A popular community pattern uses Anthropic models with local inference for heartbeats. Sources: [OpenClaw-Token-Optimization](https://github.com/wassupjay/OpenClaw-Token-Optimization), [Opus-as-Orchestrator discussion #858](https://github.com/openclaw/openclaw/discussions/858), [VelvetShark multi-model routing](https://velvetshark.com/openclaw-multi-model-routing).
+
+### The Pattern
+
+| Role | Model | Cost |
+|---|---|---|
+| Primary | Claude Haiku 4.5 | $1.00/$5.00 per MTok |
+| Subagents | Claude Opus 4.6 | $5.00/$25.00 per MTok |
+| Heartbeat | Ollama llama3.2:3b (local) | $0 |
+
+The idea: cheap Haiku handles high-volume interactions, expensive Opus handles complex background reasoning, local Ollama handles heartbeats for free.
+
+OpenClaw supports Ollama natively -- set `OLLAMA_API_KEY="ollama-local"` or configure it explicitly as a provider with `baseUrl: "http://localhost:11434"`. ([Ollama integration docs](https://docs.ollama.com/integrations/openclaw))
+
+### Anthropic Pricing (Feb 2026)
+
+Source: [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing), [OpenRouter](https://openrouter.ai/provider/anthropic)
+
+| Model | Input $/MTok | Output $/MTok | Cache Read | Cache Write (5m) |
+|---|---|---|---|---|
+| Claude Haiku 4.5 | $1.00 | $5.00 | $0.10 | $1.25 |
+| Claude Sonnet 4.6 | $3.00 | $15.00 | $0.30 | $3.75 |
+| Claude Opus 4.6 | $5.00 | $25.00 | $0.50 | $6.25 |
+
+### Monthly Cost Estimate
+
+Assuming moderate personal usage: ~1,000 messages/day, ~500 tokens avg, 100 subagent calls/day at ~2,000 tokens:
+
+| Component | Monthly Tokens | Rate | Monthly Cost |
+|---|---|---|---|
+| Haiku input | 18M | $1.00/MTok | $18 |
+| Haiku output | 12M | $5.00/MTok | $60 |
+| Opus input | 3.6M | $5.00/MTok | $18 |
+| Opus output | 2.4M | $25.00/MTok | $60 |
+| Ollama | -- | $0 | $0 |
+| **Total** | | | **~$156/month** |
+
+With prompt caching (~50% hit rate): **~$140/month**. With Batch API on subagents: **~$117/month**.
+
+### Better Alternatives Exist for Both Roles
+
+**Haiku replacement -- DeepSeek V3.2 is higher quality AND cheaper:**
+
+| Model | Arena Elo | Input $/MTok | Output $/MTok | vs Haiku |
+|---|---|---|---|---|
+| Claude Haiku 4.5 | ~1280 | $1.00 | $5.00 | baseline |
+| **DeepSeek V3.2** | **~1421** | **$0.25** | **$0.38** | +141 Elo, 13x cheaper output |
+| Gemini 2.5 Flash | ~1300 | $0.10 | $0.30 | +20 Elo, 17x cheaper output |
+| GLM-4.7 Flash | -- | $0.06 | $0.40 | 12x cheaper output |
+
+DeepSeek V3.2 is objectively better than Haiku on Arena Elo (~1421 vs ~1280) while costing 13x less on output. Haiku's advantage is speed and consistency, but not quality.
+
+**Opus replacement -- Gemini 3.1 Pro beats it on SWE-Bench at half the cost:**
+
+| Model | SWE-Bench V. | Arena Elo | Input $/MTok | Output $/MTok | vs Opus |
+|---|---|---|---|---|---|
+| Claude Opus 4.6 | 72.5% | ~1468 | $5.00 | $25.00 | baseline |
+| **Gemini 3.1 Pro** | **80.6%** | -- | **$2.00** | **$12.00** | +8.1% SWE-Bench, 2x cheaper |
+| Gemini 3 Pro | 63.2% | ~1487 | $1.25 | $5.00 | +19 Elo, 5x cheaper |
+| DeepSeek V3.2-Speciale | 77.8% | ~1361 | $0.40 | $1.20 | +5.3% SWE-Bench, 21x cheaper |
+| Kimi K2.5 | 76.8% | ~1473 | $0.23 | $3.00 | +4.3% SWE-Bench, 8x cheaper |
+
+### Optimised Paid Alternative
+
+If you want to pay for quality rather than use the free tier:
+
+| Role | Model | Cost | Why |
+|---|---|---|---|
+| Primary | DeepSeek V3.2 | $0.25/$0.38 | Higher Arena Elo than Haiku, 13x cheaper |
+| Subagents | Gemini 3.1 Pro | $2.00/$12.00 | Higher SWE-Bench than Opus, half the cost |
+| Heartbeat | Ollama llama3.2:3b | $0 | Local, instant |
+
+**Estimated monthly cost: ~$15-25/month** (vs ~$156 for Haiku/Opus, vs $0 for free tier).
+
+### Comparison Summary
+
+| | Free Tier (recommended) | Haiku/Opus/Ollama | Optimised Paid |
+|---|---|---|---|
+| Primary quality | Arena ~1421 | Arena ~1280 | Arena ~1421 |
+| Subagent quality | Qwen3-Coder (rivals Sonnet) | Arena ~1468 (Opus) | 80.6% SWE-Bench (Gemini 3.1 Pro) |
+| Monthly cost | **$0** | ~$156 | ~$15-25 |
+| Reliability | Multi-provider failover | Single provider | Dual provider |
+| Capacity | ~1B+ tok/month | Unlimited (pay) | Unlimited (pay) |
+
+**Verdict:** The Haiku/Opus pattern was a reasonable approach when Haiku was the best cheap model available. In February 2026, DeepSeek V3.2 has surpassed Haiku in quality at a fraction of the cost, and Gemini 3.1 Pro has surpassed Opus on coding benchmarks at half the price. The free-tier multi-provider strategy is the best value; the optimised paid alternative gives similar quality to Haiku/Opus at ~1/6th the cost.
+
+---
+
 ## Notable Models Not Recommended (and why)
 
 | Model | Why Not Primary/Fallback |
@@ -609,3 +705,15 @@ MISTRAL_API_KEY=...
 - [Model concepts](https://github.com/openclaw/openclaw/blob/main/docs/concepts/models.md)
 - [Model failover](https://github.com/openclaw/openclaw/blob/main/docs/concepts/model-failover.md)
 - [nix-openclaw](https://github.com/openclaw/nix-openclaw)
+- [Heartbeat model override bug #9556](https://github.com/openclaw/openclaw/issues/9556)
+- [Subagent model config bug #10963](https://github.com/openclaw/openclaw/issues/10963)
+- [Ollama integration docs](https://docs.ollama.com/integrations/openclaw)
+
+### Community Configuration Guides
+- [OpenClaw-Token-Optimization (wassupjay)](https://github.com/wassupjay/OpenClaw-Token-Optimization)
+- [Opus-as-Orchestrator discussion #858](https://github.com/openclaw/openclaw/discussions/858)
+- [VelvetShark multi-model routing](https://velvetshark.com/openclaw-multi-model-routing)
+- [Dual agent setup guide](https://dual-agent-guide.vercel.app/)
+- [AI model orchestration cost report](https://gist.github.com/ClaudiaCodeMaster/a7f47cf7781a8ca199d1fc7e2adb793d)
+- [Running OpenClaw without burning money](https://gist.github.com/digitalknk/ec360aab27ca47cb4106a183b2c25a98)
+- [Anthropic pricing](https://platform.claude.com/docs/en/about-claude/pricing)
