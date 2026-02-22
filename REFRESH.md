@@ -41,35 +41,40 @@ Follow [METHODOLOGY.md](METHODOLOGY.md) from Step 2 onwards:
 
 | Signal | Current Pick | Would Change To | Threshold |
 |---|---|---|---|
-| New free model with >1400 Arena Elo | DeepSeek V3.2 (primary) | The new model | Must be free and available on OpenRouter or direct API |
-| Qwen 3.5 confirmed Arena Elo >1420 | DeepSeek V3.2 (primary) | Qwen 3.5 | When Arena data is available |
-| DeepSeek V3.2 removed from free tier | DeepSeek V3.2 (primary) | Qwen3-Coder 480B or MiMo-V2-Flash | If paid cost exceeds $1/M output |
+| New free model with SWE-Bench >75% | Qwen3 Coder (primary) | The new model | Must be free (`:free` variant) on OpenRouter or direct API |
+| Step 3.5 Flash gets Arena Elo >1460 | Qwen3 Coder (primary) | Step 3.5 Flash | Already has SWE-Bench 74.4%; Arena confirmation would make it primary |
+| Qwen 3.5 gets free variant | Qwen3 Coder (primary) | Qwen 3.5 | If `:free` variant appears and quality is confirmed |
+| Qwen3 Coder removed from free tier | Qwen3 Coder (primary) | Step 3.5 Flash or DeepSeek R1 | Check `:free` variant still exists |
 | Groq discontinues free tier | Groq (heartbeat + fallback) | OpenRouter llama-3.1-8b or Step 3.5 Flash | If Groq requires payment |
 | Mistral removes Experiment plan | Mistral (fallback anchor) | Cerebras as last fallback | If 1B tokens/month goes away |
 | New provider with better free tier | Current chain | Add or replace weakest link | If daily limits exceed current providers |
-| Step 3.5 Flash proves unreliable | Step 3.5 Flash (fallback) | GLM-4.5 Air or Trinity Large Preview | After observed failures |
+| Step 3.5 Flash proves unreliable | Step 3.5 Flash (fallback 1) | GPT-OSS 120B or GLM-4.5 Air | After observed failures |
 | GLM-4.7 Flash Z.AI tier proves stable | Groq (heartbeat) | Z.AI GLM-4.7 Flash | If latency is consistently <1s |
+| DeepSeek V3.2 gets `:free` variant | Qwen3 Coder (primary) | DeepSeek V3.2 | Arena ~1421 overall would make it the top free model |
 
 ### Signals That the Current Recommendation is Still Optimal
 
 The recommendation is stable as long as:
-- DeepSeek V3.2 remains top-5 on Chatbot Arena and available free/cheap on OpenRouter
+- Qwen3 Coder remains available as `qwen/qwen3-coder:free` on OpenRouter
+- Step 3.5 Flash remains available as `stepfun/step-3.5-flash:free` on OpenRouter
 - Groq, Mistral, and Cerebras all maintain their free tiers
-- No free model surpasses Arena Elo ~1420 (which would become the new primary)
+- No free model surpasses SWE-Bench ~75% (which would become the new primary)
 - OpenClaw's config schema hasn't changed significantly
 
 ### Models to Watch
 
 | Model | Why | When to Re-evaluate |
 |---|---|---|
-| **Qwen 3.5 Plus** | Claims to beat GPT-5.2. Awaiting Arena confirmation. | When Elo data is published |
-| **GLM-4.5 Air** | Free on OpenRouter, agentic-focused. Unproven. | After community reports on quality |
-| **Trinity Large Preview** | Free, 512K context. Preview quality. | When it exits preview |
+| **Qwen 3.5 Plus** | Claims to beat GPT-5.2. Awaiting Arena confirmation. | When Elo data is published; especially if `:free` variant appears |
+| **DeepSeek V3.2** | Arena ~1421 overall but not free. Would be top primary if it gets a `:free` variant. | If OpenRouter adds `:free` variant |
+| **Trinity Large Preview** | Free, 131K context. Preview quality. | When it exits preview |
 | **Nemotron 3 Super/Ultra** | NVIDIA's upcoming larger models | On release (H1 2026) |
 | **Doubao Seed 2.0** (ByteDance) | Strong benchmarks, cheap. Not yet on OpenRouter. | When available on OpenRouter |
+| **Devstral 2** (Mistral) | SWE-Bench 72.2%, agentic coding. Free variant may exist but unconfirmed. | When confirmed `:free` on OpenRouter |
 
 ### Version History
 
 | Date | Change | Reason |
 |---|---|---|
+| 2026-02-22 | Switch primary to Qwen3 Coder; correct free model status | DeepSeek V3.2 is NOT free on OpenRouter. Verified all `:free` model IDs via API. |
 | 2026-02-21 | Initial analysis | Full evaluation from scratch |

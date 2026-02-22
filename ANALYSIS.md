@@ -52,24 +52,32 @@ Qwen 3.5 (released Feb 15, 2026) is a 397B MoE (17B active) that claims to outpe
 
 Source: [OpenRouter free models](https://openrouter.ai/collections/free-models), [CostGoat](https://costgoat.com/pricing/openrouter-free-models), [TeamDay](https://www.teamday.ai/blog/best-free-ai-models-openrouter-2026)
 
-| Model | Params | Context | Standout Strength |
-|---|---|---|---|
-| **MiMo-V2-Flash** (Xiaomi) | 309B MoE (15B active) | 262K | #1 open SWE-Bench (73.4%), 150 tok/s |
-| **Qwen3-Coder 480B** (Alibaba) | 480B MoE (35B active) | 262K | Rivals Claude Sonnet on coding |
-| **Devstral 2** (Mistral) | 123B dense | 262K | Agentic coding (72.2% SWE-Bench), MIT |
-| **Qwen3-235B-Thinking** | 235B MoE (22B active) | 131K | AIME'25 92%, MATH-500 98% |
-| **DeepSeek R1 0528** | 671B MoE (37B active) | 164K | Top open reasoning |
-| **Llama 4 Maverick** (Meta) | 400B MoE (17B active) | 256K | GPT-4 class, multimodal, Arena ~1320 |
-| **Step 3.5 Flash** (StepFun) | 196B MoE (11B active) | 256K | Ultra-efficient reasoning, trending |
-| **GLM-4.5 Air** (Zhipu) | -- | 131K | Agentic, toggleable thinking mode |
-| **Trinity Large Preview** (Arcee) | 400B MoE (13B active) | 512K | US-built, 2-3x faster than peers |
-| **Nemotron 3 Nano** (NVIDIA) | 30B MoE | 256K | Hybrid Mamba-Transformer, 1M context |
-| **GPT-OSS-120B** (OpenAI) | 120B | 131K | OpenAI's open-weight model |
-| **Llama 3.1 405B** (Meta) | 405B dense | 131K | Largest dense open model |
-| **Gemini 2.0 Flash Exp** (Google) | -- | 1M | 1M context, multimodal |
-| **Hermes 3 405B** (Nous) | 405B | 131K | Instruction following specialist |
-| **Mistral Small 3.1 24B** | 24B | 128K | Fast, vision capable |
-| **Gemma 3 27B** (Google) | 27B | 131K | Vision-language |
+All models below have confirmed `$0` pricing via the OpenRouter API (Feb 22, 2026). Models with `:free` suffix are permanent free variants; models at `$0` without `:free` may be temporary promotions.
+
+| Model | ID | Params | Context | Standout Strength |
+|---|---|---|---|---|
+| **Qwen3-Coder 480B** (Alibaba) | `qwen/qwen3-coder:free` | 480B MoE (35B active) | 262K | Best free coding model, Arena ~1455 coding, SWE-Bench 67-70% |
+| **Step 3.5 Flash** (StepFun) | `stepfun/step-3.5-flash:free` | 196B MoE (11B active) | 256K | SWE-Bench 74.4%, LiveCodeBench 86.4%, ultra-efficient |
+| **DeepSeek R1 0528** | `deepseek/deepseek-r1-0528:free` | 671B MoE (37B active) | 164K | Top open reasoning, Arena ~1464, AIME'25 87.5% |
+| **GPT-OSS-120B** (OpenAI) | `openai/gpt-oss-120b:free` | 120B | 131K | SWE-Bench 62.4%, OpenAI's open-weight model |
+| **Qwen3-235B-Thinking** | `qwen/qwen3-235b-a22b-thinking-2507` | 235B MoE (22B active) | 131K | AIME'25 92%, Arena ~1472. $0 but no `:free` suffix |
+| **GLM-4.5 Air** (Zhipu) | `z-ai/glm-4.5-air:free` | -- | 131K | SWE-Bench ~59.8%, toggleable thinking mode |
+| **Qwen3 Next 80B** | `qwen/qwen3-next-80b-a3b-instruct:free` | 80B MoE | 262K | General-purpose, large context |
+| **Llama 3.3 70B** (Meta) | `meta-llama/llama-3.3-70b-instruct:free` | 70B | 128K | GPT-4 class, also free via Groq |
+| **Hermes 3 405B** (Nous) | `nousresearch/hermes-3-llama-3.1-405b:free` | 405B | 131K | Instruction following specialist |
+| **Mistral Small 3.1 24B** | `mistralai/mistral-small-3.1-24b-instruct:free` | 24B | 128K | Fast, vision capable |
+| **Trinity Large Preview** (Arcee) | `arcee-ai/trinity-large-preview:free` | 400B MoE (13B active) | 131K | Reasoning + tools, preview quality |
+| **Nemotron 3 Nano** (NVIDIA) | `nvidia/nemotron-3-nano-30b-a3b:free` | 30B MoE | 256K | Hybrid Mamba-Transformer |
+| **Gemma 3 27B** (Google) | `google/gemma-3-27b-it:free` | 27B | 131K | Vision-language, multimodal |
+| **Nemotron Nano 12B VL** (NVIDIA) | `nvidia/nemotron-nano-12b-v2-vl:free` | 12B | 128K | Vision + tools |
+| **Solar Pro 3** (Upstage) | `upstage/solar-pro-3:free` | -- | 128K | Multilingual |
+
+**Not free on OpenRouter** (corrections from previous version):
+- **DeepSeek V3.2**: $0.26/$0.38 -- no `:free` variant exists. See Budget Paid section.
+- **MiMo-V2-Flash**: Deprecating on OpenRouter since Jan 26, 2026. Do not plan around this model.
+- **Gemini 2.5 Flash**: $0.30/$2.50 on OpenRouter. Free only via Google's direct API.
+- **GPT-5 Nano**: $0.05/$0.40. Budget paid only.
+- **Grok 4.1 Fast**: $0.20/$0.50. Free promotional period ended.
 
 OpenRouter free tier: 50 RPD baseline, **1,000 RPD after a one-time $10 credit purchase**. ([source](https://openrouter.ai/docs/api/reference/limits))
 
@@ -125,12 +133,12 @@ A model is Pareto-optimal if no other model is strictly better on all of quality
 
 | Model | Quality | Speed | Why On Frontier |
 |---|---|---|---|
-| **Qwen3-Coder 480B** | Highest coding | Medium | Best free coding model |
-| **MiMo-V2-Flash** | 73.4% SWE-Bench | Fast (150 tok/s) | Best free SWE-Bench + fast |
-| **DeepSeek R1 0528** | Best reasoning | Slow | Unmatched reasoning at $0 |
-| **Llama 4 Maverick** | Arena ~1320, multimodal | Medium | Best free general + vision |
-| **Step 3.5 Flash** | Strong reasoning | Very fast | Best efficiency (11B active) |
-| **Mistral Small 3.1** | Good general | Fast | Best small free model |
+| **Qwen3-Coder 480B** | SWE-Bench 67-70%, Arena ~1455 | Medium | Best free coding specialist |
+| **Step 3.5 Flash** | SWE-Bench 74.4%, LiveCodeBench 86.4% | Very fast | Highest free SWE-Bench + ultra-efficient (11B active) |
+| **DeepSeek R1 0528** | Arena ~1464, best reasoning | Slow | Unmatched reasoning at $0 |
+| **GPT-OSS-120B** | SWE-Bench 62.4% | Medium | Solid all-rounder, OpenAI open-weight |
+| **GLM-4.5 Air** | SWE-Bench ~59.8% | Fast | Efficient, toggleable thinking |
+| **Mistral Small 3.1** | Good general | Fast | Best small free model, vision capable |
 
 ### Budget Paid Pareto Frontier
 
@@ -143,9 +151,10 @@ A model is Pareto-optimal if no other model is strictly better on all of quality
 
 ### Dominated Models (eliminated)
 
+- **MiMo-V2-Flash**: Was #1 open SWE-Bench (73.4%) but **deprecating on OpenRouter since Jan 26, 2026**. Do not plan around.
 - **MiniMax M2.5** ($0.30/$1.10): Dominated by DeepSeek V3.2 (better Arena Elo, lower cost)
-- **GPT-4o-mini**: Dominated by free models with higher quality
 - **Llama 3.1 8B**: Dominated by Mistral Small 3.1 24B (same cost, better quality) and Step 3.5 Flash (same cost, much better quality)
+- **Llama 4 Maverick**: Previously listed as free but not confirmed in current API. Multimodal role covered by Gemma 3 27B.
 
 ---
 
@@ -155,37 +164,42 @@ A model is Pareto-optimal if no other model is strictly better on all of quality
 
 | Role | Model | Provider | Cost | Why |
 |---|---|---|---|---|
-| **Primary** | `deepseek/deepseek-v3.2` | OpenRouter | Free / $0.25/$0.38 | Arena Elo ~1421 (4th overall). Best quality-to-cost ratio in the market. |
-| **Fallback 1** | `qwen/qwen3-coder-480b-a35b` | OpenRouter | Free | Rivals Claude Sonnet on coding. Different provider lineage. |
-| **Fallback 2** | `llama-3.3-70b-versatile` | Groq | Free | Independent rate limits from OpenRouter. 300+ tok/s. |
-| **Fallback 3** | `qwen3-235b` | Cerebras | Free | Independent provider. 1M tok/day. Strong reasoning. |
-| **Fallback 4** | `stepfun/step-3.5-flash` | OpenRouter | Free | 196B MoE, only 11B active. Ultra-efficient. |
-| **Fallback 5** | `mistral-small-latest` | Mistral | Free | 1B tok/month. Ultimate safety net. |
-| **Fallback 6** | `meta-llama/llama-4-maverick` | OpenRouter | Free | Multimodal fallback. GPT-4 class. |
-| **Fallback 7** | `deepseek/deepseek-r1-0528` | OpenRouter | Free | Reasoning specialist fallback. |
+| **Primary** | `qwen/qwen3-coder:free` | OpenRouter | Free | Best free coding model. Arena ~1455 coding, SWE-Bench 67-70%, 262K context. |
+| **Fallback 1** | `stepfun/step-3.5-flash:free` | OpenRouter | Free | Highest free SWE-Bench (74.4%). Ultra-efficient, only 11B active params. |
+| **Fallback 2** | `deepseek/deepseek-r1-0528:free` | OpenRouter | Free | Best free reasoning. Arena ~1464. |
+| **Fallback 3** | `llama-3.3-70b-versatile` | Groq | Free | Independent provider. 300+ tok/s. |
+| **Fallback 4** | `qwen3-235b` | Cerebras | Free | Independent provider. 1M tok/day. Strong reasoning. |
+| **Fallback 5** | `openai/gpt-oss-120b:free` | OpenRouter | Free | SWE-Bench 62.4%. Solid all-rounder. |
+| **Fallback 6** | `mistral-small-latest` | Mistral | Free | 1B tok/month. Ultimate safety net. |
 | **Heartbeat** | `llama-3.1-8b-instant` | Groq | Free | 14,400 RPD. 300+ tok/s. Runs every 30m, speed is critical. |
-| **Subagents** | `qwen/qwen3-coder-480b-a35b` | OpenRouter | Free | Strong coding + general. Background tasks need quality. |
-| **Image** | `meta-llama/llama-4-maverick` | OpenRouter | Free | Native multimodal. |
+| **Subagents** | `qwen/qwen3-coder:free` | OpenRouter | Free | Same as primary. Coding quality matters for background tasks. |
+| **Image** | `google/gemma-3-27b-it:free` | OpenRouter | Free | Vision-language, 131K context. Confirmed `:free` variant. |
 
 ### Rationale for Primary
 
-DeepSeek V3.2 has the highest Arena Elo (~1421) among models that are free or near-free on OpenRouter. It scores 4th overall on Chatbot Arena, behind only Gemini 3 Pro, GPT-5.2, and Claude Opus 4.6 -- all of which cost 5-200x more. It's available free on OpenRouter (rate-limited) and only $0.25/$0.38/M paid.
+Qwen3 Coder 480B is the strongest free coding model on OpenRouter. It has an Arena Elo of ~1455 on the coding leaderboard, SWE-Bench Verified 67-70%, SWE-Bench Pro 38.7%, and 262K context window. It's purpose-built for coding tasks, which aligns directly with OpenClaw's primary use case.
 
-Alternatives considered:
-- **Qwen 3.5 Plus** ($0.50/$2.00): Claims to beat GPT-5.2 but newer and less proven. Would be a strong primary if Arena Elo confirms the claims.
-- **Kimi K2.5** ($0.23/$3.00): 76.8% SWE-Bench and 262K context. Strong but higher output cost and not free.
-- **GLM-5** ($0.30/$2.55): 77.8% SWE-Bench, record-low hallucination, MIT license. Strong but not free and output cost is higher.
+Step 3.5 Flash has a higher SWE-Bench score (74.4%) but is newer with less Arena data. It's placed as Fallback 1 -- an excellent complement to Qwen3 Coder with a different architecture and provider lineage.
+
+**Why not DeepSeek V3.2?** It has a higher Arena Elo (~1421 overall) but is **not free** on OpenRouter ($0.26/$0.38 per MTok, no `:free` variant). It remains an excellent choice for the "Optimised Paid" config below.
+
+Other alternatives considered:
+- **Kimi K2.5** ($0.23/$3.00): 76.8% SWE-Bench, Arena ~1473 coding. Outstanding but $3/M output makes it expensive.
+- **Qwen 3.5 Plus** ($0.50/$2.00): Claims to beat GPT-5.2 but too new for Arena Elo confirmation.
+- **DeepSeek R1 0528**: Arena ~1464 but SWE-Bench only 57.6% standalone. Excellent at reasoning but weaker at real-world coding. Placed as Fallback 2.
 
 ### Multi-Provider Failover Strategy
 
 Configure multiple providers so OpenClaw's failover chains across independent rate limits:
 
 **Primary chain** (interactive):
-1. OpenRouter -- DeepSeek V3.2 (best quality)
-2. Groq -- Llama 3.3 70B (fastest, independent limits)
-3. Cerebras -- Qwen3 235B (independent limits, strong reasoning)
-4. OpenRouter -- Step 3.5 Flash, Maverick, R1 (additional free models)
-5. Mistral -- Mistral Small (1B tok/month safety net)
+1. OpenRouter -- Qwen3 Coder (best free coding quality)
+2. OpenRouter -- Step 3.5 Flash (highest SWE-Bench among free models)
+3. OpenRouter -- DeepSeek R1 0528 (best free reasoning)
+4. Groq -- Llama 3.3 70B (independent limits, 300+ tok/s)
+5. Cerebras -- Qwen3 235B (independent limits, strong reasoning)
+6. OpenRouter -- GPT-OSS 120B (solid backup)
+7. Mistral -- Mistral Small (1B tok/month safety net)
 
 **Combined free capacity estimate**:
 
@@ -233,16 +247,7 @@ A one-time $10 credit purchase raises the free-model rate limit from 50 to 1,000
         "api": "openai-completions",
         "models": [
           {
-            "id": "deepseek/deepseek-v3.2",
-            "name": "DeepSeek V3.2",
-            "reasoning": false,
-            "input": ["text"],
-            "contextWindow": 163840,
-            "maxTokens": 16384,
-            "cost": { "input": 0.25, "output": 0.38, "cacheRead": 0.025, "cacheWrite": 0.25 }
-          },
-          {
-            "id": "qwen/qwen3-coder-480b-a35b",
+            "id": "qwen/qwen3-coder:free",
             "name": "Qwen3 Coder 480B",
             "reasoning": false,
             "input": ["text"],
@@ -251,30 +256,39 @@ A one-time $10 credit purchase raises the free-model rate limit from 50 to 1,000
             "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
           },
           {
-            "id": "stepfun/step-3.5-flash",
+            "id": "stepfun/step-3.5-flash:free",
             "name": "Step 3.5 Flash",
             "reasoning": true,
             "input": ["text"],
-            "contextWindow": 262144,
+            "contextWindow": 256000,
             "maxTokens": 16384,
             "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
           },
           {
-            "id": "meta-llama/llama-4-maverick",
-            "name": "Llama 4 Maverick",
-            "reasoning": false,
-            "input": ["text", "image"],
-            "contextWindow": 262144,
-            "maxTokens": 65536,
-            "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
-          },
-          {
-            "id": "deepseek/deepseek-r1-0528",
+            "id": "deepseek/deepseek-r1-0528:free",
             "name": "DeepSeek R1 0528",
             "reasoning": true,
             "input": ["text"],
             "contextWindow": 163840,
             "maxTokens": 65536,
+            "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
+          },
+          {
+            "id": "openai/gpt-oss-120b:free",
+            "name": "GPT-OSS 120B",
+            "reasoning": false,
+            "input": ["text"],
+            "contextWindow": 131072,
+            "maxTokens": 16384,
+            "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
+          },
+          {
+            "id": "google/gemma-3-27b-it:free",
+            "name": "Gemma 3 27B",
+            "reasoning": false,
+            "input": ["text", "image"],
+            "contextWindow": 131072,
+            "maxTokens": 8192,
             "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
           }
         ]
@@ -341,15 +355,14 @@ A one-time $10 credit purchase raises the free-model rate limit from 50 to 1,000
   "agents": {
     "defaults": {
       "model": {
-        "primary": "openrouter/deepseek/deepseek-v3.2",
+        "primary": "openrouter/qwen/qwen3-coder:free",
         "fallbacks": [
-          "openrouter/qwen/qwen3-coder-480b-a35b",
+          "openrouter/stepfun/step-3.5-flash:free",
+          "openrouter/deepseek/deepseek-r1-0528:free",
           "groq/llama-3.3-70b-versatile",
           "cerebras/qwen3-235b",
-          "openrouter/stepfun/step-3.5-flash",
-          "mistral/mistral-small-latest",
-          "openrouter/meta-llama/llama-4-maverick",
-          "openrouter/deepseek/deepseek-r1-0528"
+          "openrouter/openai/gpt-oss-120b:free",
+          "mistral/mistral-small-latest"
         ]
       },
       "heartbeat": {
@@ -357,17 +370,17 @@ A one-time $10 credit purchase raises the free-model rate limit from 50 to 1,000
         "model": "groq/llama-3.1-8b-instant"
       },
       "subagents": {
-        "model": "openrouter/qwen/qwen3-coder-480b-a35b"
+        "model": "openrouter/qwen/qwen3-coder:free"
       },
       "imageModel": {
-        "primary": "openrouter/meta-llama/llama-4-maverick"
+        "primary": "openrouter/google/gemma-3-27b-it:free"
       },
       "models": {
-        "openrouter/deepseek/deepseek-v3.2": { "alias": "default" },
-        "openrouter/qwen/qwen3-coder-480b-a35b": { "alias": "coder" },
-        "openrouter/stepfun/step-3.5-flash": { "alias": "step" },
-        "openrouter/meta-llama/llama-4-maverick": { "alias": "maverick" },
-        "openrouter/deepseek/deepseek-r1-0528": { "alias": "reason" },
+        "openrouter/qwen/qwen3-coder:free": { "alias": "coder" },
+        "openrouter/stepfun/step-3.5-flash:free": { "alias": "step" },
+        "openrouter/deepseek/deepseek-r1-0528:free": { "alias": "reason" },
+        "openrouter/openai/gpt-oss-120b:free": { "alias": "gptoss" },
+        "openrouter/google/gemma-3-27b-it:free": { "alias": "gemma" },
         "groq/llama-3.3-70b-versatile": { "alias": "groq" },
         "cerebras/qwen3-235b": { "alias": "cerebras" },
         "mistral/mistral-small-latest": { "alias": "mistral" }
@@ -396,16 +409,7 @@ Replace the `initialConfig` block in `/Users/jack/workspace/nix-claw/hosts/claw/
           api = "openai-completions";
           models = [
             {
-              id = "deepseek/deepseek-v3.2";
-              name = "DeepSeek V3.2";
-              reasoning = false;
-              input = [ "text" ];
-              contextWindow = 163840;
-              maxTokens = 16384;
-              cost = { input = 0.25; output = 0.38; cacheRead = 0.025; cacheWrite = 0.25; };
-            }
-            {
-              id = "qwen/qwen3-coder-480b-a35b";
+              id = "qwen/qwen3-coder:free";
               name = "Qwen3 Coder 480B";
               reasoning = false;
               input = [ "text" ];
@@ -414,30 +418,39 @@ Replace the `initialConfig` block in `/Users/jack/workspace/nix-claw/hosts/claw/
               cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
             }
             {
-              id = "stepfun/step-3.5-flash";
+              id = "stepfun/step-3.5-flash:free";
               name = "Step 3.5 Flash";
               reasoning = true;
               input = [ "text" ];
-              contextWindow = 262144;
+              contextWindow = 256000;
               maxTokens = 16384;
               cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
             }
             {
-              id = "meta-llama/llama-4-maverick";
-              name = "Llama 4 Maverick";
-              reasoning = false;
-              input = [ "text" "image" ];
-              contextWindow = 262144;
-              maxTokens = 65536;
-              cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
-            }
-            {
-              id = "deepseek/deepseek-r1-0528";
+              id = "deepseek/deepseek-r1-0528:free";
               name = "DeepSeek R1 0528";
               reasoning = true;
               input = [ "text" ];
               contextWindow = 163840;
               maxTokens = 65536;
+              cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
+            }
+            {
+              id = "openai/gpt-oss-120b:free";
+              name = "GPT-OSS 120B";
+              reasoning = false;
+              input = [ "text" ];
+              contextWindow = 131072;
+              maxTokens = 16384;
+              cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
+            }
+            {
+              id = "google/gemma-3-27b-it:free";
+              name = "Gemma 3 27B";
+              reasoning = false;
+              input = [ "text" "image" ];
+              contextWindow = 131072;
+              maxTokens = 8192;
               cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
             }
           ];
@@ -498,29 +511,28 @@ Replace the `initialConfig` block in `/Users/jack/workspace/nix-claw/hosts/claw/
       };
       agents.defaults = {
         model = {
-          primary = "openrouter/deepseek/deepseek-v3.2";
+          primary = "openrouter/qwen/qwen3-coder:free";
           fallbacks = [
-            "openrouter/qwen/qwen3-coder-480b-a35b"
+            "openrouter/stepfun/step-3.5-flash:free"
+            "openrouter/deepseek/deepseek-r1-0528:free"
             "groq/llama-3.3-70b-versatile"
             "cerebras/qwen3-235b"
-            "openrouter/stepfun/step-3.5-flash"
+            "openrouter/openai/gpt-oss-120b:free"
             "mistral/mistral-small-latest"
-            "openrouter/meta-llama/llama-4-maverick"
-            "openrouter/deepseek/deepseek-r1-0528"
           ];
         };
         heartbeat = {
           every = "30m";
           model = "groq/llama-3.1-8b-instant";
         };
-        subagents.model = "openrouter/qwen/qwen3-coder-480b-a35b";
-        imageModel.primary = "openrouter/meta-llama/llama-4-maverick";
+        subagents.model = "openrouter/qwen/qwen3-coder:free";
+        imageModel.primary = "openrouter/google/gemma-3-27b-it:free";
         models = {
-          "openrouter/deepseek/deepseek-v3.2" = { alias = "default"; };
-          "openrouter/qwen/qwen3-coder-480b-a35b" = { alias = "coder"; };
-          "openrouter/stepfun/step-3.5-flash" = { alias = "step"; };
-          "openrouter/meta-llama/llama-4-maverick" = { alias = "maverick"; };
-          "openrouter/deepseek/deepseek-r1-0528" = { alias = "reason"; };
+          "openrouter/qwen/qwen3-coder:free" = { alias = "coder"; };
+          "openrouter/stepfun/step-3.5-flash:free" = { alias = "step"; };
+          "openrouter/deepseek/deepseek-r1-0528:free" = { alias = "reason"; };
+          "openrouter/openai/gpt-oss-120b:free" = { alias = "gptoss"; };
+          "openrouter/google/gemma-3-27b-it:free" = { alias = "gemma"; };
           "groq/llama-3.3-70b-versatile" = { alias = "groq"; };
           "cerebras/qwen3-235b" = { alias = "cerebras"; };
           "mistral/mistral-small-latest" = { alias = "mistral"; };
@@ -589,16 +601,17 @@ With prompt caching (~50% hit rate): **~$140/month**. With Batch API on subagent
 
 ### Better Alternatives Exist for Both Roles
 
-**Haiku replacement -- DeepSeek V3.2 is higher quality AND cheaper:**
+**Haiku replacement -- multiple models are higher quality AND cheaper:**
 
 | Model | Arena Elo | Input $/MTok | Output $/MTok | vs Haiku |
 |---|---|---|---|---|
 | Claude Haiku 4.5 | ~1280 | $1.00 | $5.00 | baseline |
-| **DeepSeek V3.2** | **~1421** | **$0.25** | **$0.38** | +141 Elo, 13x cheaper output |
+| **DeepSeek V3.2** | **~1421** | **$0.26** | **$0.38** | +141 Elo, 13x cheaper output |
+| **Qwen3 Coder 480B** | **~1455** (coding) | **$0.00** | **$0.00** | +175 Elo (coding), free |
 | Gemini 2.5 Flash | ~1300 | $0.10 | $0.30 | +20 Elo, 17x cheaper output |
 | GLM-4.7 Flash | -- | $0.06 | $0.40 | 12x cheaper output |
 
-DeepSeek V3.2 is objectively better than Haiku on Arena Elo (~1421 vs ~1280) while costing 13x less on output. Haiku's advantage is speed and consistency, but not quality.
+DeepSeek V3.2 ($0.26/$0.38, not free) is objectively better than Haiku on Arena Elo (~1421 vs ~1280) at 13x less output cost. Qwen3 Coder beats Haiku on the coding Arena leaderboard (~1455) while being completely free. Haiku's advantage is speed and consistency, but not quality or cost.
 
 **Opus replacement -- Gemini 3.1 Pro beats it on SWE-Bench at half the cost:**
 
@@ -626,13 +639,13 @@ If you want to pay for quality rather than use the free tier:
 
 | | Free Tier (recommended) | Haiku/Opus/Ollama | Optimised Paid |
 |---|---|---|---|
-| Primary quality | Arena ~1421 | Arena ~1280 | Arena ~1421 |
+| Primary quality | Qwen3-Coder Arena ~1455 (coding) | Arena ~1280 | DeepSeek V3.2 Arena ~1421 |
 | Subagent quality | Qwen3-Coder (rivals Sonnet) | Arena ~1468 (Opus) | 80.6% SWE-Bench (Gemini 3.1 Pro) |
 | Monthly cost | **$0** | ~$156 | ~$15-25 |
 | Reliability | Multi-provider failover | Single provider | Dual provider |
 | Capacity | ~1B+ tok/month | Unlimited (pay) | Unlimited (pay) |
 
-**Verdict:** The Haiku/Opus pattern was a reasonable approach when Haiku was the best cheap model available. In February 2026, DeepSeek V3.2 has surpassed Haiku in quality at a fraction of the cost, and Gemini 3.1 Pro has surpassed Opus on coding benchmarks at half the price. The free-tier multi-provider strategy is the best value; the optimised paid alternative gives similar quality to Haiku/Opus at ~1/6th the cost.
+**Verdict:** The Haiku/Opus pattern was a reasonable approach when Haiku was the best cheap model available. In February 2026, free models like Qwen3 Coder (Arena ~1455 coding) and Step 3.5 Flash (SWE-Bench 74.4%) surpass Haiku in coding quality at zero cost. DeepSeek V3.2 ($0.26/$0.38) surpasses Haiku on general Arena Elo at 13x less. Gemini 3.1 Pro has surpassed Opus on coding benchmarks at half the price. The free-tier multi-provider strategy is the best value; the optimised paid alternative gives similar quality to Haiku/Opus at ~1/6th the cost.
 
 ---
 
@@ -640,14 +653,15 @@ If you want to pay for quality rather than use the free tier:
 
 | Model | Why Not Primary/Fallback |
 |---|---|
-| **Kimi K2.5** ($0.23/$3.00) | Strong (76.8% SWE-Bench, Arena ~1473) but $3/M output is 8x DeepSeek V3.2. Not free on OpenRouter. |
+| **DeepSeek V3.2** ($0.26/$0.38) | Arena ~1421 overall -- highest quality budget model. But **not free** on OpenRouter (no `:free` variant). Recommended for the "Optimised Paid" config instead. |
+| **Kimi K2.5** ($0.23/$3.00) | Strong (76.8% SWE-Bench, Arena ~1473 coding) but $3/M output. Not free on OpenRouter. |
 | **GLM-5** ($0.30/$2.55) | 77.8% SWE-Bench, MIT, record-low hallucination. But $2.55/M output and not free on OpenRouter. |
 | **GLM-4.7 Flash** ($0.06/$0.40) | Excellent for its size (30B/3B active). Has free Z.AI tier. Could replace Groq heartbeat model if Z.AI proves reliable. |
 | **Qwen 3.5 Plus** ($0.50/$2.00) | Claims to beat GPT-5.2. Too new (Feb 15) for Arena Elo confirmation. Monitor closely -- could become primary if claims hold. |
 | **Mistral Large 3** ($0.50/$1.50) | ~92% of GPT-5.2 at 15% price. Good but not free. |
 | **MiniMax M2.5** ($0.30/$1.10) | 80% SWE-Bench Multilingual. Dominated by DeepSeek V3.2 (better Arena, cheaper). |
-| **GLM-4.5 Air** (free) | Free on OpenRouter. Good agentic model but less proven than the recommended free models. Worth adding to fallbacks if primary recommendations underperform. |
-| **Trinity Large Preview** (free) | Free on OpenRouter, 512K context. Preview quality -- monitor for stability before promoting to fallbacks. |
+| **MiMo-V2-Flash** (was free) | Was #1 open SWE-Bench (73.4%) but **deprecating on OpenRouter since Jan 26, 2026**. |
+| **Trinity Large Preview** (free) | Free on OpenRouter, 131K context. Included in free models table but preview quality -- not yet proven enough for the primary fallback chain. |
 
 ---
 
