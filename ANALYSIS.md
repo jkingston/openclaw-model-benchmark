@@ -101,23 +101,26 @@ Sources: [Google Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing),
 
 | Provider | Free Tier | RPD | Monthly Tokens | Best Models | CC Required? |
 |---|---|---|---|---|---|
-| **OpenRouter** | Permanent | 50 (1,000 w/ $10) | ~30K-300K req | 20+ free models | No |
+| **OpenRouter** | Permanent | 50 (1,000 w/ $10) | ~30K-300K req | 30+ free models | No |
 | **Google Gemini** | Permanent | 100-1,000/project | ~3K-30K req/project | Gemini 2.5 Pro/Flash | No |
-| **Groq** | Permanent | 1,000-14,400 | ~30K-430K req | Llama 4, Qwen3, GPT-OSS | No |
+| **Groq** | Permanent | 1,000-14,400 | ~30K-430K req | Llama 3.3, GPT-OSS 20B/120B | No |
 | **Mistral** | Permanent | ~unlimited | **1B tokens** | Small, Large, Codestral | No (phone) |
-| **Cerebras** | Permanent | 1M tokens/day | ~30M tokens | Llama 4, Qwen3 235B | No |
+| **Cerebras** | Permanent | 1M tokens/day | ~30M tokens | Qwen3 235B, GPT-OSS 120B | No |
+| **SambaNova** | Permanent | 10-30 RPM | ~1K-5K req/day | **Llama 3.1 405B**, DeepSeek, Qwen | No |
 | **Z.AI (Zhipu)** | Permanent | 1 concurrency | -- | GLM-4.7 Flash | No |
 | **xAI** | Credits | Pay-per-use | $175 first month | Grok 4 | No |
 
 ### Key Details
 
-**Google Gemini**: Quotas are per-project, not per-key. Creating separate Google Cloud projects gives independent rate limits. 3 projects = 3x limits. This is [documented and legitimate](https://discuss.ai.google.dev/t/questions-about-multiple-free-paid-tier-projects/84682).
+**Google Gemini**: Quotas are per-project, not per-key. Creating separate Google Cloud projects gives independent rate limits. 3 projects = 3x limits. This is [documented and legitimate](https://discuss.ai.google.dev/t/questions-about-multiple-free-paid-tier-projects/84682). Free tier includes Gemini 2.5 Pro (5 RPM, 100 RPD), Gemini 2.5 Flash (10 RPM, 250 RPD), and Flash-Lite (15 RPM, 1,000 RPD). All have 1M context. Google reduced free quotas by 50-80% in Dec 2025. The API has an OpenAI-compatible endpoint at `https://generativelanguage.googleapis.com/v1beta/openai/`. ([source](https://ai.google.dev/gemini-api/docs/pricing))
 
-**Groq**: 14,400 RPD on llama-3.1-8b-instant (ideal for heartbeats). 300+ tok/s via custom LPU hardware. ([source](https://console.groq.com/docs/rate-limits))
+**Groq**: 14,400 RPD on llama-3.1-8b-instant, 1,000 RPD on llama-3.3-70b and gpt-oss-20b. GPT-OSS 20B (3.6B active MoE) reportedly matches o3-mini quality at 1,200 tok/s. 300+ tok/s via custom LPU hardware. ([source](https://console.groq.com/docs/rate-limits))
 
 **Mistral**: 1 billion tokens/month on the Experiment plan -- by far the most generous monthly allowance. Phone verification required (one phone per plan). ([source](https://help.mistral.ai/en/articles/455206-how-can-i-try-the-api-for-free-with-the-experiment-plan))
 
-**Cerebras**: 1M tokens/day, 30 RPM. ~20x GPU inference speed. ([source](https://inference-docs.cerebras.ai/support/rate-limits))
+**Cerebras**: 1M tokens/day, 30 RPM. ~20x GPU inference speed. GPT-OSS 120B runs at 3,000 tok/s, Qwen3 235B at 1,400 tok/s. **Caveat**: Free tier context may be limited to 8,192 tokens (vs 128K paid). Verify before relying on for long-context tasks. ([source](https://inference-docs.cerebras.ai/support/rate-limits))
+
+**SambaNova**: Free tier with 10-30 RPM per model. Notable for offering **Llama 3.1 405B** -- the largest dense open model, not available free anywhere else. Also has DeepSeek R1, Qwen3 32B, and Llama 3.3 70B. OpenAI-compatible API at `https://api.sambanova.ai/v1`. ([source](https://community.sambanova.ai/docs?topic=321))
 
 **Z.AI**: Free tier for GLM-4.7 Flash with 1 concurrency, no credit card. Self-hosting also free under MIT license. ([source](https://docs.z.ai/guides/overview/pricing))
 
@@ -168,12 +171,14 @@ A model is Pareto-optimal if no other model is strictly better on all of quality
 | **Fallback 1** | `stepfun/step-3.5-flash:free` | OpenRouter | Free | Highest free SWE-Bench (74.4%). Ultra-efficient, only 11B active params. |
 | **Fallback 2** | `deepseek/deepseek-r1-0528:free` | OpenRouter | Free | Best free reasoning. Arena ~1464. |
 | **Fallback 3** | `llama-3.3-70b-versatile` | Groq | Free | Independent provider. 300+ tok/s. |
-| **Fallback 4** | `qwen3-235b` | Cerebras | Free | Independent provider. 1M tok/day. Strong reasoning. |
-| **Fallback 5** | `openai/gpt-oss-120b:free` | OpenRouter | Free | SWE-Bench 62.4%. Solid all-rounder. |
-| **Fallback 6** | `mistral-small-latest` | Mistral | Free | 1B tok/month. Ultimate safety net. |
-| **Heartbeat** | `llama-3.1-8b-instant` | Groq | Free | 14,400 RPD. 300+ tok/s. Runs every 30m, speed is critical. |
+| **Fallback 4** | `qwen3-235b` | Cerebras | Free | Independent provider. 1,400 tok/s. Note: free tier context may be limited to 8K. |
+| **Fallback 5** | `gemini-2.5-flash` | Google Gemini | Free | Near-frontier quality. 1M context. 250 RPD (×3 with multi-project). |
+| **Fallback 6** | `Meta-Llama-3.1-405B-Instruct` | SambaNova | Free | Largest dense open model (405B). Independent provider. |
+| **Fallback 7** | `openai/gpt-oss-120b:free` | OpenRouter | Free | SWE-Bench 62.4%. Solid all-rounder. |
+| **Fallback 8** | `mistral-small-latest` | Mistral | Free | 1B tok/month. Ultimate safety net. |
+| **Heartbeat** | `openai/gpt-oss-20b` | Groq | Free | 1,000 RPD. 1,200 tok/s. Matches o3-mini quality. |
 | **Subagents** | `qwen/qwen3-coder:free` | OpenRouter | Free | Same as primary. Coding quality matters for background tasks. |
-| **Image** | `google/gemma-3-27b-it:free` | OpenRouter | Free | Vision-language, 131K context. Confirmed `:free` variant. |
+| **Image** | `qwen/qwen3-vl-30b-a3b-thinking` | OpenRouter | Free | Vision + reasoning + tool use. 131K context. Stronger than Gemma 3 27B. |
 
 ### Rationale for Primary
 
@@ -192,22 +197,27 @@ Other alternatives considered:
 
 Configure multiple providers so OpenClaw's failover chains across independent rate limits:
 
-**Primary chain** (interactive):
-1. OpenRouter -- Qwen3 Coder (best free coding quality)
-2. OpenRouter -- Step 3.5 Flash (highest SWE-Bench among free models)
-3. OpenRouter -- DeepSeek R1 0528 (best free reasoning)
-4. Groq -- Llama 3.3 70B (independent limits, 300+ tok/s)
-5. Cerebras -- Qwen3 235B (independent limits, strong reasoning)
+**Primary chain** (interactive, 6 independent providers):
+1. OpenRouter -- Qwen3 Coder, Step 3.5 Flash, DeepSeek R1 (best free coding/reasoning)
+2. Groq -- Llama 3.3 70B (independent limits, 300+ tok/s)
+3. Cerebras -- Qwen3 235B (independent limits, 1,400 tok/s)
+4. Google Gemini -- Gemini 2.5 Flash (near-frontier, 1M context)
+5. SambaNova -- Llama 3.1 405B (largest dense model, independent limits)
 6. OpenRouter -- GPT-OSS 120B (solid backup)
 7. Mistral -- Mistral Small (1B tok/month safety net)
 
-**Combined free capacity estimate**:
+**Combined free capacity estimate** (6 providers):
 
-| Metric | Daily | Monthly |
+| Provider | Daily Requests | Monthly Tokens |
 |---|---|---|
-| Requests | ~15,000-20,000 | ~450,000-600,000 |
-| Tokens | ~5-10M | ~1B+ (Mistral anchor) |
-| Cost | $0 | $0 |
+| OpenRouter | 1,000 (w/ $10 tip) | ~300K req |
+| Groq | 1,000-14,400 | ~430K req |
+| Cerebras | ~1,000 | ~30M tokens |
+| Google Gemini | 250-1,000 (×3 projects) | ~7.5K-30K req |
+| SambaNova | ~1,000-5,000 | ~150K req |
+| Mistral | ~unlimited | **1B tokens** |
+| **Total** | **~20,000-25,000+** | **~1B+ tokens** |
+| **Cost** | **$0** | **$0** |
 
 ### Google Gemini Multi-Project Bonus
 
@@ -283,12 +293,12 @@ A one-time $10 credit purchase raises the free-model rate limit from 50 to 1,000
             "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
           },
           {
-            "id": "google/gemma-3-27b-it:free",
-            "name": "Gemma 3 27B",
-            "reasoning": false,
+            "id": "qwen/qwen3-vl-30b-a3b-thinking",
+            "name": "Qwen3 VL 30B Thinking",
+            "reasoning": true,
             "input": ["text", "image"],
             "contextWindow": 131072,
-            "maxTokens": 8192,
+            "maxTokens": 16384,
             "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
           }
         ]
@@ -308,8 +318,8 @@ A one-time $10 credit purchase raises the free-model rate limit from 50 to 1,000
             "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
           },
           {
-            "id": "llama-3.1-8b-instant",
-            "name": "Llama 3.1 8B Instant (Groq)",
+            "id": "openai/gpt-oss-20b",
+            "name": "GPT-OSS 20B (Groq)",
             "reasoning": false,
             "input": ["text"],
             "contextWindow": 131072,
@@ -327,6 +337,47 @@ A one-time $10 credit purchase raises the free-model rate limit from 50 to 1,000
             "id": "qwen3-235b",
             "name": "Qwen3 235B (Cerebras)",
             "reasoning": true,
+            "input": ["text"],
+            "contextWindow": 8192,
+            "maxTokens": 4096,
+            "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
+          },
+          {
+            "id": "gpt-oss-120b",
+            "name": "GPT-OSS 120B (Cerebras)",
+            "reasoning": false,
+            "input": ["text"],
+            "contextWindow": 8192,
+            "maxTokens": 4096,
+            "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
+          }
+        ]
+      },
+      "google-gemini": {
+        "baseUrl": "https://generativelanguage.googleapis.com/v1beta/openai",
+        "apiKey": "${GOOGLE_AI_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "gemini-2.5-flash",
+            "name": "Gemini 2.5 Flash (Google)",
+            "reasoning": false,
+            "input": ["text", "image"],
+            "contextWindow": 1048576,
+            "maxTokens": 65536,
+            "cost": { "input": 0.0, "output": 0.0, "cacheRead": 0.0, "cacheWrite": 0.0 }
+          }
+        ]
+      },
+      "sambanova": {
+        "baseUrl": "https://api.sambanova.ai/v1",
+        "apiKey": "${SAMBANOVA_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "Meta-Llama-3.1-405B-Instruct",
+            "name": "Llama 3.1 405B (SambaNova)",
+            "reasoning": false,
             "input": ["text"],
             "contextWindow": 131072,
             "maxTokens": 16384,
@@ -361,28 +412,34 @@ A one-time $10 credit purchase raises the free-model rate limit from 50 to 1,000
           "openrouter/deepseek/deepseek-r1-0528:free",
           "groq/llama-3.3-70b-versatile",
           "cerebras/qwen3-235b",
+          "google-gemini/gemini-2.5-flash",
+          "sambanova/Meta-Llama-3.1-405B-Instruct",
           "openrouter/openai/gpt-oss-120b:free",
           "mistral/mistral-small-latest"
         ]
       },
       "heartbeat": {
         "every": "30m",
-        "model": "groq/llama-3.1-8b-instant"
+        "model": "groq/openai/gpt-oss-20b"
       },
       "subagents": {
         "model": "openrouter/qwen/qwen3-coder:free"
       },
       "imageModel": {
-        "primary": "openrouter/google/gemma-3-27b-it:free"
+        "primary": "openrouter/qwen/qwen3-vl-30b-a3b-thinking"
       },
       "models": {
         "openrouter/qwen/qwen3-coder:free": { "alias": "coder" },
         "openrouter/stepfun/step-3.5-flash:free": { "alias": "step" },
         "openrouter/deepseek/deepseek-r1-0528:free": { "alias": "reason" },
         "openrouter/openai/gpt-oss-120b:free": { "alias": "gptoss" },
-        "openrouter/google/gemma-3-27b-it:free": { "alias": "gemma" },
+        "openrouter/qwen/qwen3-vl-30b-a3b-thinking": { "alias": "vision" },
         "groq/llama-3.3-70b-versatile": { "alias": "groq" },
+        "groq/openai/gpt-oss-20b": { "alias": "heartbeat" },
         "cerebras/qwen3-235b": { "alias": "cerebras" },
+        "cerebras/gpt-oss-120b": { "alias": "cerebras-oss" },
+        "google-gemini/gemini-2.5-flash": { "alias": "gemini" },
+        "sambanova/Meta-Llama-3.1-405B-Instruct": { "alias": "samba" },
         "mistral/mistral-small-latest": { "alias": "mistral" }
       }
     }
@@ -445,12 +502,12 @@ Replace the `initialConfig` block in `/Users/jack/workspace/nix-claw/hosts/claw/
               cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
             }
             {
-              id = "google/gemma-3-27b-it:free";
-              name = "Gemma 3 27B";
-              reasoning = false;
+              id = "qwen/qwen3-vl-30b-a3b-thinking";
+              name = "Qwen3 VL 30B Thinking";
+              reasoning = true;
               input = [ "text" "image" ];
               contextWindow = 131072;
-              maxTokens = 8192;
+              maxTokens = 16384;
               cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
             }
           ];
@@ -470,8 +527,8 @@ Replace the `initialConfig` block in `/Users/jack/workspace/nix-claw/hosts/claw/
               cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
             }
             {
-              id = "llama-3.1-8b-instant";
-              name = "Llama 3.1 8B Instant (Groq)";
+              id = "openai/gpt-oss-20b";
+              name = "GPT-OSS 20B (Groq)";
               reasoning = false;
               input = [ "text" ];
               contextWindow = 131072;
@@ -484,10 +541,49 @@ Replace the `initialConfig` block in `/Users/jack/workspace/nix-claw/hosts/claw/
           baseUrl = "https://api.cerebras.ai/v1";
           apiKey = "\${CEREBRAS_API_KEY}";
           api = "openai-completions";
+          models = [
+            {
+              id = "qwen3-235b";
+              name = "Qwen3 235B (Cerebras)";
+              reasoning = true;
+              input = [ "text" ];
+              contextWindow = 8192;
+              maxTokens = 4096;
+              cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
+            }
+            {
+              id = "gpt-oss-120b";
+              name = "GPT-OSS 120B (Cerebras)";
+              reasoning = false;
+              input = [ "text" ];
+              contextWindow = 8192;
+              maxTokens = 4096;
+              cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
+            }
+          ];
+        };
+        google-gemini = {
+          baseUrl = "https://generativelanguage.googleapis.com/v1beta/openai";
+          apiKey = "\${GOOGLE_AI_API_KEY}";
+          api = "openai-completions";
           models = [{
-            id = "qwen3-235b";
-            name = "Qwen3 235B (Cerebras)";
-            reasoning = true;
+            id = "gemini-2.5-flash";
+            name = "Gemini 2.5 Flash (Google)";
+            reasoning = false;
+            input = [ "text" "image" ];
+            contextWindow = 1048576;
+            maxTokens = 65536;
+            cost = { input = 0.0; output = 0.0; cacheRead = 0.0; cacheWrite = 0.0; };
+          }];
+        };
+        sambanova = {
+          baseUrl = "https://api.sambanova.ai/v1";
+          apiKey = "\${SAMBANOVA_API_KEY}";
+          api = "openai-completions";
+          models = [{
+            id = "Meta-Llama-3.1-405B-Instruct";
+            name = "Llama 3.1 405B (SambaNova)";
+            reasoning = false;
             input = [ "text" ];
             contextWindow = 131072;
             maxTokens = 16384;
@@ -517,24 +613,30 @@ Replace the `initialConfig` block in `/Users/jack/workspace/nix-claw/hosts/claw/
             "openrouter/deepseek/deepseek-r1-0528:free"
             "groq/llama-3.3-70b-versatile"
             "cerebras/qwen3-235b"
+            "google-gemini/gemini-2.5-flash"
+            "sambanova/Meta-Llama-3.1-405B-Instruct"
             "openrouter/openai/gpt-oss-120b:free"
             "mistral/mistral-small-latest"
           ];
         };
         heartbeat = {
           every = "30m";
-          model = "groq/llama-3.1-8b-instant";
+          model = "groq/openai/gpt-oss-20b";
         };
         subagents.model = "openrouter/qwen/qwen3-coder:free";
-        imageModel.primary = "openrouter/google/gemma-3-27b-it:free";
+        imageModel.primary = "openrouter/qwen/qwen3-vl-30b-a3b-thinking";
         models = {
           "openrouter/qwen/qwen3-coder:free" = { alias = "coder"; };
           "openrouter/stepfun/step-3.5-flash:free" = { alias = "step"; };
           "openrouter/deepseek/deepseek-r1-0528:free" = { alias = "reason"; };
           "openrouter/openai/gpt-oss-120b:free" = { alias = "gptoss"; };
-          "openrouter/google/gemma-3-27b-it:free" = { alias = "gemma"; };
+          "openrouter/qwen/qwen3-vl-30b-a3b-thinking" = { alias = "vision"; };
           "groq/llama-3.3-70b-versatile" = { alias = "groq"; };
+          "groq/openai/gpt-oss-20b" = { alias = "heartbeat"; };
           "cerebras/qwen3-235b" = { alias = "cerebras"; };
+          "cerebras/gpt-oss-120b" = { alias = "cerebras-oss"; };
+          "google-gemini/gemini-2.5-flash" = { alias = "gemini"; };
+          "sambanova/Meta-Llama-3.1-405B-Instruct" = { alias = "samba"; };
           "mistral/mistral-small-latest" = { alias = "mistral"; };
         };
       };
@@ -553,8 +655,18 @@ Add API keys to `/home/claw/.openclaw/env`:
 OPENROUTER_API_KEY=sk-or-...
 GROQ_API_KEY=gsk_...
 CEREBRAS_API_KEY=csk-...
+GOOGLE_AI_API_KEY=AIza...
+SAMBANOVA_API_KEY=...
 MISTRAL_API_KEY=...
 ```
+
+Register for free accounts:
+- **OpenRouter**: [openrouter.ai](https://openrouter.ai/) (+ one-time $10 for 1,000 RPD)
+- **Groq**: [console.groq.com](https://console.groq.com/)
+- **Cerebras**: [cloud.cerebras.ai](https://cloud.cerebras.ai/)
+- **Google AI Studio**: [aistudio.google.com](https://aistudio.google.com/)
+- **SambaNova**: [cloud.sambanova.ai](https://cloud.sambanova.ai/)
+- **Mistral**: [console.mistral.ai](https://console.mistral.ai/)
 
 ---
 
@@ -706,13 +818,19 @@ If you want to pay for quality rather than use the free tier:
 - [Google Gemini pricing](https://ai.google.dev/gemini-api/docs/pricing)
 - [Gemini rate limits](https://www.aifreeapi.com/en/posts/gemini-api-free-tier-rate-limits)
 - [Google multi-project](https://discuss.ai.google.dev/t/questions-about-multiple-free-paid-tier-projects/84682)
+- [Groq supported models](https://console.groq.com/docs/models)
 - [Groq rate limits](https://console.groq.com/docs/rate-limits)
+- [Groq GPT-OSS 20B](https://console.groq.com/docs/model/openai/gpt-oss-20b)
 - [Mistral free tier](https://help.mistral.ai/en/articles/455206-how-can-i-try-the-api-for-free-with-the-experiment-plan)
 - [Mistral tiers](https://docs.mistral.ai/deployment/ai-studio/tier)
 - [Cerebras pricing](https://www.cerebras.ai/pricing)
+- [Cerebras supported models](https://inference-docs.cerebras.ai/models/overview)
 - [Cerebras rate limits](https://inference-docs.cerebras.ai/support/rate-limits)
+- [SambaNova Cloud](https://cloud.sambanova.ai/)
+- [SambaNova rate limits](https://community.sambanova.ai/docs?topic=321)
 - [Z.AI pricing](https://docs.z.ai/guides/overview/pricing)
 - [xAI credits](https://venturebeat.com/ai/xai-woos-developers-with-25-month-worth-of-api-credits-support-for-openai-anthropic-sdks/)
+- [Free LLM API resources (GitHub)](https://github.com/cheahjs/free-llm-api-resources)
 
 ### OpenClaw Configuration
 - [Configuration reference](https://github.com/openclaw/openclaw/blob/main/docs/gateway/configuration-reference.md)
